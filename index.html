@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spindle — Wheel of Decisions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    
+    <header>
+        <span class="logo">Spindle</span>
+
+        <div class="header-divider" id="hdrDivider" style="display: none;"></div>
+        <div class="proj-name-wrap" id="projNameWrap" style="display: none;">
+            <span class="proj-name" id="projNameEl" title="Click to rename" onclick="renameCurrent()"></span>
+            <span class="status-dot" id="statusDot" title="Saved"></span>
+        </div>
+
+        <div class="h-spacer"></div>
+
+        <button class="hbtn" onclick="showOpenProjectModal()" title="Open a saved project">
+            <i class="bi bi-folder2-open"></i> Open
+        </button>
+
+        <button class="hbtn" onclick="newProject()" title="New project">
+            <i class="bi bi-plus-lg"></i> New
+        </button>
+
+        <div id="saveActions" style="display: none; gap: 6px; align-items: center;">
+            <button class="hbtn" onclick="saveAs()" title="Save as a new name">
+                <i class="bi bi-copy"></i> Save As
+            </button>
+
+            <button class="hbtn primary" onclick="saveProject()" title="Save (overwrites current)">
+                <i class="bi bi-floppy"></i> Save
+            </button>
+        </div>
+    </header>
+
+
+    <div class="app-body">
+        <aside class="sidebar-left dimmed" id="sidebarLeft">
+            <div class="sb-head">
+                <span class="sb-title">Contents</span>
+                <button class="icon-btn accent" title="New Folder" onclick="newFolder(null)"><i class="bi bi-folder-plus"></i></button>
+                <button class="icon-btn accent" title="New Wheel" onclick="newWheel(null)"><i class="bi bi-plus-circle"></i></button>
+            </div>
+            <div class="tree" id="tree"></div>
+        </aside>
+
+        <main class="wheel-area" id="wheelArea">
+
+            <div class="home-screen" id="homeScreen">
+                <div>
+                    <div class="home-logo">Spindle</div>
+                </div>
+                <div class="home-cards">
+                    <div class="home-card" onclick="newProject()">
+                        <i class="bi bi-plus-circle-dotted"></i>
+                        <div class="hc-title">New Project</div>
+                        <div class="hc-sub">Start with a fresh project</div>
+                    </div>
+                    <div class="home-card" onclick="showOpenProjectModal()">
+                        <i class="bi bi-folder2-open"></i>
+                        <div class="hc-title">Open Project</div>
+                        <div class="hc-sub">Open a previous project</div>
+                    </div>
+                </div>
+                <div class="home-recent" id="homeRecent"></div>
+            </div>
+
+            <div class="no-wheel-msg" id="noWheelMsg" style="display:none">
+                <i class="bi bi-circle-dotted"></i>
+                <h3>No wheel selected</h3>
+                <p>Create a wheel from the panel on the left, or select an existing one.</p>
+            </div>
+
+            <div class="wheel-ui" id="wheelUI" style="display:none">
+                <div class="wheel-title" id="wheelTitleEl"></div>
+                <div class="wheel-wrapper">
+                    <svg class="wheel-pointer" width="26" height="22" viewbox="0 0 26 22">
+                        <polygon points="13,21 1,2 25,2" fill="#f0b429" stroke="#0f0e1b" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                    <canvas id="wheel" width="400" height="400"></canvas>
+                    <div class="wheel-hub"></div>
+                </div>
+                <div class="result-display" id="resultDisplay"></div>
+                <button class="spin-btn" id="spinBtn" onclick="spinWheel()" disabled>
+                    <i class="bi bi-arrow-repeat"></i> Spin
+                    <span class="spin-shortcut">Ctrl+Enter</span>
+                </button>
+            </div>
+        </main>
+
+        <aside class="sidebar-right dimmed" id="sidebarRight">
+            <div class="opts-head">
+                <button class="sb-tab active" id="tabOpts" onclick="switchTab('opts')">Options</button>
+                <button class="sb-tab" id="tabResults" onclick="switchTab('results')">Results</button>
+                <div class="h-spacer"></div>
+                <button class="icon-btn" title="Sort by weight" onclick="sortOptions()"><i class="bi bi-sort-numeric-down"></i></button>
+                <button class="icon-btn" title="Randomize colours" onclick="randomizeColours()"><i class="bi bi-shuffle"></i></button>
+            </div>
+
+            <div id="optsPanel" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0;">
+                <div class="panel-list" id="optsList"></div>
+                <div class="list-footer">
+                    <button class="list-btn" id="addOptBtn" onclick="addOption()" disabled>
+                        <i class="bi bi-plus-lg"></i> Add Option
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultsPanel" style="display: none; flex-direction: column; flex:1; overflow: hidden; min-height: 0;">
+                <div class="panel-list" id="resultsList"></div>
+                <div class="list-footer">
+                    <button class="list-btn" id="clearBtn" onclick="clearResults()">
+                        <i class="bi bi-trash3"></i> Clear Results
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal-backdrop" id="genericBackdrop">
+        <div class="modal">
+            <h2 id="modalTitle">Title</h2>
+            <div class="modal-input-list" id="modalInputList"></div>
+            <div class="modal-btns">
+                <button class="btn-ghost" id="modalSecondary">Secondary</button>
+                <button class="btn-primary" id="modalPrimary">Primary</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="openBackdrop">
+        <div class="open-modal">
+            <div class="om-head">
+                <h2>Open Project</h2>
+                <button onclick="hideOpenProjectModal();"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="om-list" id="omList"></div>
+            <div class="om-footer">
+                <button class="list-btn" onclick="hideOpenProjectModal(); newProject();">
+                    <i clas="bi bi-plus-lg"></i> New Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confetti-wrap" id="confettiWrap"></div>
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
