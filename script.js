@@ -2,8 +2,9 @@
 // STORAGE SCHEMA
 //
 //  localStorage:
-//    'spindle_index'      → [{ id, name, savedAt }]
-//    'spindle_proj_{id}'  → { id, name, savedAt, tree, activeWheelId, spinResults }
+//      'spindle_index'     → [{ id, name, savedAt }]
+//      'spindle_proj_{id}' → { id, name, savedAt, tree, activeWheelId, spinResults }
+//      'spindle_settings'  → [{  }]
 //
 //  currentProject: the in-memory working copy (may be unsaved / dirty)
 //  isDirty: true if working copy differs from last save
@@ -17,10 +18,14 @@ let currentProject = null;
 let isDirty = false;
 
 const IDX_KEY = "spindle_index";
+const SETTINGS_KEY = "spindle_settings";
+
 function projKey(id) { return 'spindle_proj_' + id; }
 
 function getIndex() { try { return JSON.parse(localStorage.getItem(IDX_KEY)) || []; } catch { return []; } }
 function setIndex(idx) { localStorage.setItem(IDX_KEY, JSON.stringify(idx)); }
+
+function getSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || []; } catch { return []; } }
 
 function loadProject(id) {
     try {
@@ -33,7 +38,7 @@ function loadProject(id) {
         renderTree();
         if (currentProject.activeWheelId) {
             const w = findNode(currentProject.activeWheelId);
-            if (w) { selectWheel(currentProject.activeWheelId); return; }
+            if (w) { selectWheel(currentProject.activeWheelId); markDirty(false); return; }
         }
         showState('no-wheel');
         renderOptionsPanel();
@@ -53,17 +58,24 @@ function deleteProject(id) {
         renderTree();
         renderOptionsPanel();
     }
+    renderHomeRecent();
+    renderOpenModal();
 }
 
 function saveProject() {
     if (!currentProject) return;
+    if (!isDirty) {
+        showToast("No changes made", "warn");
+        return;
+    }
     const now = new Date().toISOString();
     currentProject.savedAt = now;
 
     let idx = getIndex();
     const existing = idx.find(e => e.id === currentProject.id);
     if (existing) { existing.name = currentProject.name; existing.savedAt = now; }
-    else idx.unshift({ id: currentProject.id, name: currentProject.name, savedAt: now })
+    else idx.unshift({ id: currentProject.id, name: currentProject.name, savedAt: now });
+    setIndex(idx);
 
     localStorage.setItem(projKey(currentProject.id), JSON.stringify(currentProject));
 
@@ -86,9 +98,20 @@ function saveAs() {
         currentProject.name = name;
         saveProject();
         updateHeaderState();
+        hideGenericModal();
     });
     connectSecondary(hideGenericModal);
 }
+
+window.addEventListener("keydown", ev => {
+    const tag = ev.target.tagName.toLowerCase();
+    if (['input', 'textarea'].includes(tag)) return;
+
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "s") {
+        ev.preventDefault();
+        ev.shiftKey ? saveAs() : saveProject();
+    }
+});
 
 // ═══════════════════════════════════════════════════
 // PROJECT LIFECYCLE
@@ -129,7 +152,7 @@ function renameCurrent() {
         currentProject.name = name;
         markDirty(true);
         updateHeaderState();
-        hidedGenericModal();
+        hideGenericModal();
     })
     connectSecondary(hideGenericModal);
 }
@@ -220,6 +243,16 @@ function connectSecondary(fn) {
     modalSecondary.addEventListener("click", secondaryFunction);
 }
 
+window.addEventListener("keydown", ev => {
+    if (ev.key == "Enter") {
+        if (!document.getElementById("genericBackdrop").classList.contains("open")) return;
+        if (primaryFunction) primaryFunction();
+    } else if (ev.key == "Escape") {
+        if (secondaryFunction) secondaryFunction();
+        if (document.getElementById("openBackdrop").classList.contains("open")) hideOpenProjectModal();
+    }
+})
+
 // ═══════════════════════════════════════════════════
 // TREE MANAGMENT
 // ═══════════════════════════════════════════════════
@@ -271,12 +304,12 @@ function buildFolder(node, wrap) {
     el.className = "tree-item";
     el.innerHTML = `
         <i class="bi bi-chevron-right t-chevron ${node.open?'open':''}"></i>
-        <i class="bi bi-folder${node.open?"-open":""} t-icon"></i>
+        <i class="bi bi-folder${node.open?"2-open":""} t-icon"></i>
         <span class="t-name">${esc(node.name)}</span>
         <span class="t-actions">
             <button class="ta-btn" title="Add wheel", onclick="newWheel('${node.id}');event.stopPropagation();"><i class="bi bi-plus"></i></button>
             <button class="ta-btn" title="Rename", onclick="renameNode('${node.id}');event.stopPropagation();"><i class="bi bi-pencil"></i></button>
-            <button class="ta-btn" title="Delete", onclick="deleteNode('${node.id}');event.stopPropagatin();"><i class="bi bi-trash3"></i></button>
+            <button class="ta-btn del" title="Delete", onclick="deleteNode('${node.id}');event.stopPropagation();"><i class="bi bi-trash3"></i></button>
         </span>
     `;
     el.addEventListener('click', () => toggleFolder(node.id));
@@ -322,7 +355,7 @@ function buildWheel(node, wrap) {
         <span class="t-name">${esc(node.name)}</span>
         <span class="t-actions">
             <button class="ta-btn" title="Rename", onclick="renameNode('${node.id}');event.stopPropagation();"><i class="bi bi-pencil"></i></button>
-            <button class="ta-btn" title="Delete", onclick="deleteNode('${node.id}');event.stopPropagatin();"><i class="bi bi-trash3"></i></button>
+            <button class="ta-btn del" title="Delete", onclick="deleteNode('${node.id}');event.stopPropagation();"><i class="bi bi-trash3"></i></button>
         </span>
     `;
     el.addEventListener('click', () => selectWheel(node.id));
@@ -748,9 +781,10 @@ function renderHomeRecent() {
                 <div class="ri-name">${esc(entry.name)}</div>
                 <div class="ri-date">${formatDate(entry.savedAt)}</div>
             </div>
-            <button class="ri-del;" title="Delete" onclick="deleteProject(${entry.id});event.stopPropagation();"><i class="bi bi-trash3"></i></button>
+            <button class="ri-del" title="Delete" onclick="deleteProject('${entry.id}');event.stopPropagation();"><i class="bi bi-trash3"></i></button>
         `;
         item.addEventListener('click', e => { if (!e.target.closest('.ri-del')) { loadProject(entry.id); } });
+        wrap.appendChild(item);
     })
 }
 
@@ -761,6 +795,7 @@ function updateHeaderState() {
     document.getElementById('saveActions').style.display = hasPrj ? 'flex' : 'none';
     document.getElementById('sidebarLeft').classList.toggle('dimmed', !hasPrj);
     document.getElementById('sidebarRight').classList.toggle('dimmed', !hasPrj);
+    document.getElementById("header").classList.toggle('dimmed', !hasPrj);
 
     if (hasPrj) {
         document.getElementById("projNameEl").textContent = currentProject.name;
@@ -818,9 +853,9 @@ function formatDate(iso) {
     const now = new Date();
     const diff = (now - d) / 1000;
     if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60 + 'm ago');
-    if (diff < 86400) return Math.floor(diff / 3600 + 'h ago');
-    if (diff < 604800) return Math.floor(diff / 86400 + 'd ago');
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
     return d.toLocaleDateString();
 }
 
@@ -904,6 +939,20 @@ window.addEventListener('resize', resizeWheel);
 // ---| Stops before unloading |--- \\
 window.addEventListener('beforeunload', e => {
     if (isDirty) e.preventDefault();
+})
+
+// ---| Shortcuts |--- \\
+window.addEventListener("keydown", ev => {
+    if (ev.ctrlKey || ev.metaKey) {
+        if (ev.key.toLowerCase() === "p") {
+            ev.preventDefault();
+            newProject();
+        } else if (ev.key.toLowerCase() === "o") {
+            ev.preventDefault();
+            renderOpenModal();
+            showOpenProjectModal();
+        }
+    }
 })
 
 // ═══════════════════════════════════════════════════

@@ -7,11 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
-    
-    <header>
+
+    <header class="dimmed" id="header">
         <span class="logo">Spindle</span>
 
         <div class="header-divider" id="hdrDivider" style="display: none;"></div>
@@ -31,16 +31,15 @@
         </button>
 
         <div id="saveActions" style="display: none; gap: 6px; align-items: center;">
-            <button class="hbtn" onclick="saveAs()" title="Save as a new name">
+            <button class="hbtn" onclick="saveAs()" title="Save as a new name (CTRL+SHIFT+S)">
                 <i class="bi bi-copy"></i> Save As
             </button>
 
-            <button class="hbtn primary" onclick="saveProject()" title="Save (overwrites current)">
+            <button class="hbtn primary" onclick="saveProject()" title="Save (CTRL+S)">
                 <i class="bi bi-floppy"></i> Save
             </button>
         </div>
     </header>
-
 
     <div class="app-body">
         <aside class="sidebar-left dimmed" id="sidebarLeft">
@@ -147,6 +146,24 @@
                 <button class="list-btn" onclick="hideOpenProjectModal(); newProject();">
                     <i clas="bi bi-plus-lg"></i> New Project
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay" style="display: none;">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title">Notice</div>
+                <button class="popup-close"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <div class="popup-message">
+                Message goes here
+            </div>
+
+            <div class="popup-actions">
+                <div class="btn-ghost">Cancel</div>
+                <div class="btn-primary">OK</div>
             </div>
         </div>
     </div>

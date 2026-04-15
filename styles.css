@@ -45,6 +45,11 @@ header {
     gap: 0;
     flex-shrink: 0;
     z-index: 20;
+    transition: opacity .2s;
+}
+header.dimmed {
+    opacity: .35;
+    pointer-events: none;
 }
 .logo {
     font-family: 'Syne', sans-serif;
@@ -196,16 +201,16 @@ header {
     min-width: 0;
 }
 .tree-item:hover { background: var(--bg4); color: var(--text); }
-.tree-item.active { background: rgba(124,92,252,.18); color: var(--accent2); }
+.tree-item.active { background: rgba(124,92,252,.18); color: var(--accent2); overflow: hidden; }
 .tree-item.active::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 3px;
+    top: 1px;
+    bottom: 1px;
+    width: 4px;
     background: var(--accent);
-    border-radius: 2px;
+    border-radius: 12px;
 }
 .t-icon { font-size: 12px; flex-shrink: 0; }
 .t-chevron { font-size: 9px; color: var(--text3); flex-shrink: 0; transition: .15s; }
@@ -281,6 +286,7 @@ header {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
 }
 .home-card:hover {
     border-color: var(--accent);
@@ -647,7 +653,7 @@ canvas#wheel:hover:not(.spinning) { box-shadow: 0 0 0 5px var(--bg3), 0 0 0 7px 
     padding: 24px;
     width: 340px;
     box-shadow: 0 24px 80px rgba(0,0,0,.55);
-    animation: slide-up, .2s ease-out;
+    animation: slide-up .2s ease-out;
 }
 .modal h2 {
     font-family: 'Syne', sans-serif;
@@ -766,6 +772,64 @@ canvas#wheel:hover:not(.spinning) { box-shadow: 0 0 0 5px var(--bg3), 0 0 0 7px 
     transition: background .15s, color .15s;
 }
 .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+
+/* Popup */
+.popup-overlay {
+    z-index: 50;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(1px);
+    background: rgba(0,0,0,.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.popup {
+    width: 360px; height: 180px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+.popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border2);
+}
+.popup-title {
+    font-family: "Syne", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+.popup-close {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 5px;
+}
+.popup-close:hover {
+    color: var(--text);
+    background: var(--bg2);
+}
+.popup-message {
+    padding: 16px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+}
+.popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 24px 16px;
+}
 
 /* Confetti */
 
