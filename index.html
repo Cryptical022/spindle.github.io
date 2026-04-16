@@ -13,6 +13,7 @@
 
     <header class="dimmed" id="header">
         <span class="logo">Spindle</span>
+        <button class="settings-button" onclick="document.getElementById('settingsBackdrop').classList.add('open')" id="settingsButton" title="Open Settings"><i class="bi bi-gear"></i></button>
 
         <div class="header-divider" id="hdrDivider" style="display: none;"></div>
         <div class="proj-name-wrap" id="projNameWrap" style="display: none;">
@@ -67,6 +68,11 @@
                         <i class="bi bi-folder2-open"></i>
                         <div class="hc-title">Open Project</div>
                         <div class="hc-sub">Open a previous project</div>
+                    </div>
+                    <div class="home-card" onclick="document.getElementById('settingsBackdrop').classList.add('open')">
+                        <i class="bi bi-gear"></i>
+                        <div class="hc-title">Open Settings</div>
+                        <div class="hc-sub">Configure your Spindle experience</div>
                     </div>
                 </div>
                 <div class="home-recent" id="homeRecent"></div>
@@ -150,20 +156,109 @@
         </div>
     </div>
 
-    <div class="popup-overlay" id="popupOverlay" style="display: none;">
-        <div class="popup">
-            <div class="popup-header">
-                <div class="popup-title">Notice</div>
-                <button class="popup-close"><i class="bi bi-x-lg"></i></button>
+    <div class="settings-backdrop" id="settingsBackdrop">
+        <div class="settings-pane">
+            <div class="settings-head">
+                <div class="settings-head-text">
+                    <h2>Settings</h2>
+                    <p>Customise how Spindle looks and behaves.</p>
+                </div>
+
+                <button class="close-btn" onclick="document.getElementById('settingsBackdrop').classList.remove('open')">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
 
-            <div class="popup-message">
-                Message goes here
-            </div>
+            <div class="settings-body">
+                <section class="settings-section">
+                    <div class="section-title">Appearance</div>
 
-            <div class="popup-actions">
-                <div class="btn-ghost">Cancel</div>
-                <div class="btn-primary">OK</div>
+                    <div class="setting-grid">
+                        <button class="setting-card active" data-theme="dark">
+                            <i class="bi bi-moon-stars"></i>
+                            <span>Dark</span>
+                            <small>Default theme</small>
+                        </button>
+
+                        <button class="setting-card">
+                            <i class="bi bi-sun"></i>
+                            <span>Light</span>
+                            <small>Brighter UI</small>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="settings-section">
+                    <div class="section-title">Accent Colour</div>
+
+                    <div class="swatch-row">
+                        <button class="swatch active" data-accent="#7c5cfc" style="--swatch:#7c5cfc"></button>
+                        <button class="swatch" data-accent="#f0b429" style="--swatch:#f0b429"></button>
+                        <button class="swatch" data-accent="#34de99" style="--swatch:#34d399"></button>
+                        <button class="swatch" data-accent="#f87171" style="--swatch:#f87171"></button>
+                        <button class="swatch" data-accent="#38bdf8" style="--swatch:#38bdf8"></button>
+                    </div>
+                </section>
+
+                <section class="settings-section">
+                    <div class="section-title">Behaviour</div>
+
+                    <label class="setting-row">
+                        <div>
+                            <div class="row-title">Auto-save</div>
+                            <div class="row-sub">Automatically save changes</div>
+                        </div>
+                        <button class="toggle on" id="autoSaveToggle"></button>
+                    </label>
+
+                    <label class="setting-row">
+                        <div>
+                            <div class="row-title">Show shortcuts</div>
+                            <div class="row-sub">Display keyboard shortcuts</div>
+                        </div>
+                        <button class="toggle off" id="shortcutsToggle"></button>
+                    </label>
+                </section>
+
+                <section class="settings-section">
+                    <div class="section-title">About</div>
+
+                    <div class="about-card">
+
+                        <div class="about-header">
+                            <div class="about-icon">
+                                <i class="bi bi-disc"></i>
+                            </div>
+                            <div class="about-meta">
+                                <div class="about-name">Spindle</div>
+                                <div class="about-tag">Wheel of Decisions</div>
+                            </div>
+                        </div>
+
+                        <div class="about-line">
+                            <span>Version</span>
+                            <strong>1.0.0</strong>
+                        </div>
+
+                        <div class="about-line">
+                            <span>Build</span>
+                            <strong>Stable</strong>
+                        </div>
+
+                        <div class="about-line">
+                            <span>Last Updated</span>
+                            <strong>Recently</strong>
+                        </div>
+
+                        <div class="about-divider"></div>
+
+                        <div class="about-actions">
+                            <button class="about-btn"><i class="bi bi-github"></i><span>Github</span></button>
+                            <button class="about-btn"><i class="bi bi-bug"></i><span>Report Bug</span></button>
+                            <button class="about-btn"><i class="bi bi-lightbulb"></i>Suggestions</button>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </div>

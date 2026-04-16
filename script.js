@@ -15,17 +15,46 @@
 // ═══════════════════════════════════════════════════
 
 let currentProject = null;
+let userSettings = null;
 let isDirty = false;
 
 const IDX_KEY = "spindle_index";
 const SETTINGS_KEY = "spindle_settings";
+
+const DEFAULT_SETTINGS = {
+    Appearance: {
+        Theme: "Dark",
+        Accent: 0,
+    },
+    Behaviour: {
+        Autosave: "On",
+        Shortcuts: "On",
+    }
+}
 
 function projKey(id) { return 'spindle_proj_' + id; }
 
 function getIndex() { try { return JSON.parse(localStorage.getItem(IDX_KEY)) || []; } catch { return []; } }
 function setIndex(idx) { localStorage.setItem(IDX_KEY, JSON.stringify(idx)); }
 
-function getSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || []; } catch { return []; } }
+function getSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || DEFAULT_SETTINGS; } catch { return DEFAULT_SETTINGS; } }
+
+function loadSettings() { userSettings = getSettings(); applySettings(); }
+
+function applySettings() {
+    const root = document.documentElement;
+
+    const isDark = userSettings?.Appearance?.Theme !== "Light";
+
+    root.setAttribute("data-theme", isDark ? "dark" : "light");
+
+    const ACCENT_HUES = [260, 42, 155, 0, 200];
+
+    const hueIndex = userSettings?.Appearance?.Accent ?? 0;
+    const hue = ACCENT_HUES[hueIndex] ?? 260;
+
+    root.style.setProperty("--hue", hue)
+}
 
 function loadProject(id) {
     try {
@@ -382,7 +411,6 @@ function findNode(id, nodes) {
 function renameNode(nodeId) {
     if (!currentProject) return;
     let node = findNode(nodeId)
-    console.log(node)
     openGenericModal(`Rename ${node.type.charAt(0).toUpperCase() + node.type.slice(1)}`, "Rename", "Cancel", [{type: "text", placeholder: "Name...", defaultValue: node.name, id: "nodeRename"}])
     connectPrimary(() => {
         const name = document.getElementById("nodeRename").value.trim();
@@ -541,7 +569,6 @@ function spinWheel() {
     for (const opt of opts) {
         if (rand < accumulatedW + opt.weight) {
             winner = opt;
-            console.log(opt);
             winnerStartAngle = (accumulatedW / totalW) * TAU;
             randomPartInSlice = Math.random() * (opt.weight / totalW) * TAU;
             break;
@@ -959,6 +986,7 @@ window.addEventListener("keydown", ev => {
 // BOOT
 // ═══════════════════════════════════════════════════
 
+loadSettings();
 showState('home');
 renderHomeRecent();
 updateHeaderState();

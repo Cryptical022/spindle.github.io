@@ -1,18 +1,22 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --bg: #0f0e1b;
-    --bg2:       #161527;
-    --bg3:       #1c1a30;
-    --bg4:       #221f3a;
-    --border:    #272445;
-    --border2:   #38355e;
-    --accent:    #7c5cfc;
-    --accent2:   #a78bfa;
+    --hue: 260;
+
+    --bg:       hsl(var(--hue), 25%, 8%);
+    --bg2:      hsl(var(--hue), 25%, 11%);
+    --bg3:      hsl(var(--hue), 25%, 14%);
+    --bg4:      hsl(var(--hue), 25%, 17%);
+
+    --border:   hsl(var(--hue), 20%, 18%);
+    --border2:  hsl(var(--hue), 20%, 28%);
+
+    --accent:   hsl(var(--hue), 85%, 60%);
+    --accent2:  hsl(var(--hue), 85%, 72%);
     --gold:      #f0b429;
-    --text:      #ede9fe;
-    --text2:     #a89fc8;
-    --text3:     #5c5880;
+    --text:      hsl(var(--hue), 60%, 92%);
+    --text2:     hsl(var(--hue), 35%, 72%);
+    --text3:     hsl(var(--hue), 25%, 52%);
     --danger:    #f87171;
     --success:   #34d399;
     --warn:      #fb923c;
@@ -62,10 +66,24 @@ header.dimmed {
     white-space: nowrap;
     flex-shrink: 0;
 }
+.settings-button {
+    background: none;
+    border: none;
+    border-radius: 5px;
+    color: var(--text3);
+    margin-left: 16px;
+    padding: 6px;
+    align-items: center;
+    justify-content: center;
+}
+.settings-button:hover {
+    background: var(--bg4);
+    color: var(--text);
+}
 .header-divider {
     width: 1px; height: 22px;
     background-color: var(--border2);
-    margin: 0 14px;
+    margin: 0 16px;
     flex-shrink: 0;
 }
 .proj-name-wrap {
@@ -635,6 +653,253 @@ canvas#wheel:hover:not(.spinning) { box-shadow: 0 0 0 5px var(--bg3), 0 0 0 7px 
     flex-shrink: 0;
 }
 
+.settings-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.62);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+.settings-backdrop.open { display: flex; }
+.settings-pane {
+    width: min(760px, calc(100vw - 36px));
+    max-height: min(86vh, 860px);
+    background: linear-gradient(180deg, var(--bg2), #131222);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slide-up .2s ease-out;
+}
+.settings-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255(.02), transparent));
+}
+.settings-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+}
+.settings-head p {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text3);
+    line-height: 1.5;
+}
+.close-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--text3);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: .15s;
+}
+.close-btn:hover {
+    background: var(--bg4);
+    color: var(--text);
+    border-color: var(--border2);
+}
+.settings-body {
+    padding: 20px 24px;
+    overflow: auto;
+    display: grid;
+    gap: 18px;
+}
+.settings-section {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+}
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+}
+.setting-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+.setting-card {
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    color: var(--text2);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.setting-card i {
+    font-size: 18px;
+    color: var(--accent2);
+    margin-bottom: 4px;
+}
+.setting-card span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+.setting-card small {
+    font-size: 12px;
+    color: var(--text3);
+}
+.setting-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.setting-card.active {
+    border-color: var(--accent);
+    background: rgba(124,92,252,.12);
+}
+.swatch-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.swatch {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.1);
+    background: var(--swatch);
+    cursor: pointer;
+}
+.swatch:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+}
+.swatch.active {
+    outline: 2px solid var(--text);
+    outline-offset: 3px;
+}
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+}
+.setting-row + .setting-row {
+    border-top: 1px solid var(--border);
+}
+.row-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+.row-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 3px;
+    line-height: 1.45;
+}
+.about-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.about-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(0,0,0,.18);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+.about-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.about-meta {
+    display: flex;
+    flex-direction: column;
+}
+.about-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+.about-tag {
+    font-size: 12px;
+    color: var(--text3);
+}
+.about-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+}
+.about-line span {
+    color: var(--text3);
+}
+.about-line strong {
+    color: var(--text);
+    font-weight: 600;
+}
+.about-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+.about-actions {
+    display: flex;
+    gap: 8px;
+}
+.about-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: .15s;
+}
+.about-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(124,92,252,12);
+}
+
 .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -772,64 +1037,6 @@ canvas#wheel:hover:not(.spinning) { box-shadow: 0 0 0 5px var(--bg3), 0 0 0 7px 
     transition: background .15s, color .15s;
 }
 .btn-ghost:hover { background: var(--bg3); color: var(--text); }
-
-/* Popup */
-.popup-overlay {
-    z-index: 50;
-    position: fixed;
-    inset: 0;
-    backdrop-filter: blur(1px);
-    background: rgba(0,0,0,.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.popup {
-    width: 360px; height: 180px;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-.popup-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: var(--bg3);
-    border-bottom: 1px solid var(--border2);
-}
-.popup-title {
-    font-family: "Syne", sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-}
-.popup-close {
-    background: none;
-    border: none;
-    color: var(--text3);
-    font-size: 14px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 5px;
-}
-.popup-close:hover {
-    color: var(--text);
-    background: var(--bg2);
-}
-.popup-message {
-    padding: 16px;
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.5;
-}
-.popup-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 24px 16px;
-}
 
 /* Confetti */
 
