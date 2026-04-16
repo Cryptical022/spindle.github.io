@@ -42,18 +42,7 @@ function getSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_K
 function loadSettings() { userSettings = getSettings(); applySettings(); }
 
 function applySettings() {
-    const root = document.documentElement;
-
-    const isDark = userSettings?.Appearance?.Theme !== "Light";
-
-    root.setAttribute("data-theme", isDark ? "dark" : "light");
-
-    const ACCENT_HUES = [260, 42, 155, 0, 200];
-
-    const hueIndex = userSettings?.Appearance?.Accent ?? 0;
-    const hue = ACCENT_HUES[hueIndex] ?? 260;
-
-    root.style.setProperty("--hue", hue)
+    
 }
 
 function loadProject(id) {

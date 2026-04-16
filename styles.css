@@ -1,27 +1,23 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --hue: 260;
-
-    --bg:       hsl(var(--hue), 25%, 8%);
-    --bg2:      hsl(var(--hue), 25%, 11%);
-    --bg3:      hsl(var(--hue), 25%, 14%);
-    --bg4:      hsl(var(--hue), 25%, 17%);
-
-    --border:   hsl(var(--hue), 20%, 18%);
-    --border2:  hsl(var(--hue), 20%, 28%);
-
-    --accent:   hsl(var(--hue), 85%, 60%);
-    --accent2:  hsl(var(--hue), 85%, 72%);
-    --gold:      #f0b429;
-    --text:      hsl(var(--hue), 60%, 92%);
-    --text2:     hsl(var(--hue), 35%, 72%);
-    --text3:     hsl(var(--hue), 25%, 52%);
-    --danger:    #f87171;
-    --success:   #34d399;
-    --warn:      #fb923c;
-    --radius:    10px;
-    --radius-lg: 16px;
+    --bg:           #0f0e1b;
+    --bg2:          #161527;
+    --bg3:          #1c1a30;
+    --bg4:          #221f3a;
+    --border:       #272445;
+    --border2:      #38355e;
+    --accent:       #7c5cfc;
+    --accent2:      #a78bfa;
+    --gold:         #f0b429;
+    --text:         #ede9fe;
+    --text2:        #a89fc8;
+    --text3:        #5c5880;
+    --danger:       #f87171;
+    --success:      #34d399;
+    --warn:         #fb923c;
+    --radius:       10px;
+    --radius-lg:    16px;
 }
 
 html, body { height: 100%; overflow: hidden; }
