@@ -217,7 +217,8 @@ function renderOpenModal() {
         return;
     }
     list.innerHTML = '';
-    idx.forEach(entry => {
+    const sorted = [...idx].sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
+    sorted.forEach(entry => {
         const isCurrent = currentProject && currentProject.id === entry.id;
         const item = document.createElement('div');
         item.className = 'pm-item' + (isCurrent ? ' current' : '');
@@ -229,7 +230,7 @@ function renderOpenModal() {
             </div>
             <button class="pm-del" title="Delete project" onclick="deleteProject('${entry.id}');event.stopPropagation();">
                 <i class="bi bi-trash3"></i>
-            </button
+            </button>
         `;
         item.addEventListener('click', () => { loadProject(entry.id); hideOpenProjectModal(); });
         list.appendChild(item);
@@ -819,7 +820,8 @@ function renderHomeRecent() {
     if (idx.length === 0) { wrap.innerHTML = ''; return; }
     const recent = idx.slice(0, 5);
     wrap.innerHTML = `<div class="hr-title">Recent Projects</div>`
-    recent.forEach(entry => {
+    const sorted = [...recent].sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
+    sorted.forEach(entry => {
         const item = document.createElement('div');
         item.className = 'recent-item';
         item.innerHTML = `
