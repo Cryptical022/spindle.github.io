@@ -33,12 +33,12 @@
         </button>
 
         <div id="saveActions" style="display: none; gap: 6px; align-items: center;">
-            <button class="hbtn" onclick="saveAs()" title="Save as a new name (CTRL+SHIFT+S)">
-                <i class="bi bi-copy"></i> Save As
+            <button class="hbtn save-as-btn" onclick="saveAs()" title="Save as a new name (CTRL+SHIFT+S)">
+                <i class="bi bi-copy"></i><span class="btn-label"> Save as</span>
             </button>
 
             <button class="hbtn primary" onclick="saveProject()" title="Save (CTRL+S)">
-                <i class="bi bi-floppy"></i> Save
+                <i class="bi bi-floppy"></i><span class="btn-label"> Save</span>
             </button>
         </div>
     </header>
@@ -131,6 +131,23 @@
         </aside>
     </div>
 
+    <nav class="mobile-nav" id="mobileNav">
+        <button class="mnav-btn" data-panel="contents" onclick="mobileShowPanel('contents')">
+            <i class="bi bi-list"></i>
+            <span>Contents</span>
+        </button>
+        <button class="mnav-btn active" data-panel="wheel" onclick="mobileShowPanel('wheel')">
+            <i class="bi bi-record-circle"></i>
+            <span>Wheel</span>
+        </button>
+        <button class="mnav-btn" data-panel="options" onclick="mobileShowPanel('options')">
+            <i class="bi bi-sliders"></i>
+            <span>Options</span>
+        </button>
+    </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay" onclick="mobileClosePanels()"></div>
+
     <div class="modal-backdrop" id="genericBackdrop">
         <div class="modal">
             <h2 id="modalTitle">Title</h2>
@@ -174,30 +191,28 @@
                 <section class="settings-section">
                     <div class="section-title">Appearance</div>
 
+                    <div class="setting-sublabel">Theme</div>
                     <div class="setting-grid">
-                        <button class="setting-card active" id="darkMode" data-theme="dark">
+                        <button class="setting-card" data-setting="theme" data-value="dark">
                             <i class="bi bi-moon-stars"></i>
                             <span>Dark</span>
                             <small>Default theme</small>
                         </button>
-
-                        <button class="setting-card" id="lightMode" data-theme="light">
+                        <button class="setting-card" data-setting="theme" data-value="light">
                             <i class="bi bi-sun"></i>
                             <span>Light</span>
                             <small>Brighter UI</small>
                         </button>
                     </div>
-                </section>
 
-                <section class="settings-section">
-                    <div class="section-title">Accent Colour</div>
-
-                    <div class="swatch-row">
-                        <button class="swatch active" id="swatchPurple" data-accent="#7c5cfc" style="--swatch:#7c5cfc"></button>
-                        <button class="swatch" id="swatchYellow" data-accent="#f0b429" style="--swatch:#f0b429"></button>
-                        <button class="swatch" id="swatchGreen" data-accent="#34de99" style="--swatch:#34d399"></button>
-                        <button class="swatch" id="swatchRed" data-accent="#f87171" style="--swatch:#f87171"></button>
-                        <button class="swatch" id="swatchBlue" data-accent="#38bdf8" style="--swatch:#38bdf8"></button>
+                    <div class="setting-sublabel" style="margin-top: 18px;">Interface Colour</div>
+                    <div class="setting-desc">The primary colour applied across buttons, highlights, and active states throughout the app.</div>
+                    <div class="swatch-row" id="accentSwatches">
+                        <button class="swatch" data-setting="accent" data-value="purple"  style="--swatch:#7c5cfc" title="Violet"></button>
+                        <button class="swatch" data-setting="accent" data-value="amber"   style="--swatch:#f0b429" title="Amber"></button>
+                        <button class="swatch" data-setting="accent" data-value="emerald" style="--swatch:#34d399" title="Emerald"></button>
+                        <button class="swatch" data-setting="accent" data-value="rose"    style="--swatch:#f87171" title="Rose"></button>
+                        <button class="swatch" data-setting="accent" data-value="sky"     style="--swatch:#38bdf8" title="Sky"></button>
                     </div>
                 </section>
 
@@ -207,17 +222,25 @@
                     <label class="setting-row">
                         <div>
                             <div class="row-title">Auto-save</div>
-                            <div class="row-sub">Automatically save changes</div>
+                            <div class="row-sub">Automatically save changes to the current project</div>
                         </div>
-                        <button class="toggle on" id="autoSaveToggle"></button>
+                        <button class="toggle" id="autoSaveToggle" data-setting="autosave"></button>
+                    </label>
+
+                    <label class="setting-row">
+                        <div>
+                            <div class="row-title">Autosave Interval</div>
+                            <div class="row-sub">Time between autosaves in seconds</div>
+                        </div>
+                        <input type="number" class="w-num" id="autoSaveInterval" min="5" max="300">
                     </label>
 
                     <label class="setting-row">
                         <div>
                             <div class="row-title">Show shortcuts</div>
-                            <div class="row-sub">Display keyboard shortcuts</div>
+                            <div class="row-sub">Display keyboard shortcut hints in the UI</div>
                         </div>
-                        <button class="toggle off" id="shortcutsToggle"></button>
+                        <button class="toggle" id="shortcutsToggle" data-setting="shortcuts"></button>
                     </label>
 
                     <label class="setting-row">
@@ -226,7 +249,7 @@
                             <div class="row-sub">How long the wheel will spin for</div>
                         </div>
                         <div class="settings-slider-wrap">
-                            <input type="range" min="1" max="15" value="5" id="durationSlider">
+                            <input type="range" min="1" max="15" id="durationSlider">
                             <div class="slider-value" id="spinDurationValue">5 sec</div>
                         </div>
                     </label>
