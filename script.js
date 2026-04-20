@@ -1072,8 +1072,7 @@ function updateHeaderState() {
     const hasPrj = !!currentProject;
     document.getElementById('hdrDivider').style.display   = hasPrj ? '' : 'none';
     document.getElementById('projNameWrap').style.display = hasPrj ? '' : 'none';
-    document.getElementById('saveActions').style.display  = hasPrj ? 'flex' : 'none';
-    document.getElementById('mobileNav').style.display    = hasPrj ? 'flex' : 'none';
+    document.getElementById('saveActions').style.display  = hasPrj ? 'flex' : 'none'
     document.getElementById('sidebarLeft').classList.toggle('dimmed',  !hasPrj);
     document.getElementById('sidebarRight').classList.toggle('dimmed', !hasPrj);
     document.getElementById('header').classList.toggle('dimmed', !hasPrj);
@@ -1081,6 +1080,9 @@ function updateHeaderState() {
     if (hasPrj) {
         document.getElementById('projNameEl').textContent = currentProject.name;
         document.title = currentProject.name + ' — Spindle';
+        if (window.innerWidth < 768) {
+            document.getElementById('mobileNav').style.display = hasPrj ? 'flex' : 'none'
+        }
     } else {
         document.title = 'Spindle — Wheel of Decisions';
         mobileClosePanels();
@@ -1102,7 +1104,7 @@ function markDirty(state) {
     const dot = document.getElementById('statusDot');
     if (state === true)  { isDirty = true;  dot.classList.add('dirty');  dot.classList.remove('clean'); }
     else if (state === false) { isDirty = false; dot.classList.add('clean');  dot.classList.remove('dirty'); }
-    else                 { isDirty = false; dot.classList.remove('clean', 'dirty'); }
+    else { isDirty = false; dot.classList.remove('clean', 'dirty'); }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1210,8 +1212,12 @@ window.addEventListener('keydown', e => {
 // Resize
 window.addEventListener('resize', () => {
     resizeWheel();
-    // On resize to desktop, reset mobile panel state
-    if (window.innerWidth > 768) mobileClosePanels();
+    if (window.innerWidth > 768) {
+        document.getElementById('mobileNav').style.display = 'none'
+        mobileClosePanels();
+    } else {
+        document.getElementById('mobileNav').style.display = currentProject !== null ? 'flex' : 'none';
+    }
 });
 
 // Guard unsaved changes
